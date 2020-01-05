@@ -1,5 +1,6 @@
 package com.example.carros.domain;
 
+import com.example.carros.domain.Carro;
 import com.example.carros.domain.dto.CarroDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,25 +16,26 @@ public class CarroService {
     private CarroRepositorio rep;
 
     public List<CarroDTO> getCarros(){
-        return rep.findAll().stream().map(CarroDTO::new).collect(Collectors.toList());
+        return rep.findAll().stream().map(CarroDTO::create).collect(Collectors.toList());
     }
 
-    public Optional<Carro> getCarrosById(long id) {
-        return rep.findById(id);
+    public Optional<CarroDTO> getCarrosById(long id) {
+        return rep.findById(id).map(CarroDTO::create);
     }
 
     public List<CarroDTO> getCarrosByTipo(String tipo) {
-        return rep.findByTipo(tipo).stream().map(CarroDTO::new).collect(Collectors.toList());
+        return rep.findByTipo(tipo).stream().map(CarroDTO::create).collect(Collectors.toList());
     }
 
     public void save(Carro carro) {
         rep.save(carro);
     }
 
-    public Carro update(Carro carro, Long id) {
+    public void update(Carro carro, Long id) {
         Assert.notNull(id,"Não foi possível atualizar o registro");
 
-        Optional<Carro> optional = getCarrosById(id);
+        /*
+            Optional<Carro> optional = getCarrosById(id);
         if (optional.isPresent()){
             Carro db = optional.get();
             db.setNome(carro.getNome());
@@ -42,6 +44,13 @@ public class CarroService {
             rep.save(db);
 
             return(db);
+         */
+
+        if (getCarrosById(id).isPresent()){
+            carro.setNome(carro.getNome());
+            carro.setTipo(carro.getTipo());
+            rep.save(carro);
+
         } else {
             throw new RuntimeException("Não foi possivel para atualizar o registro");
         }
@@ -50,7 +59,7 @@ public class CarroService {
     public void delete(long id) {
         Assert.notNull(id,"Não foi possível deleter o registro");
 
-        Optional<Carro> optional = getCarrosById(id);
+        Optional<CarroDTO> optional = getCarrosById(id);
         if (optional.isPresent()){
             rep.deleteById(id);
         } else {
