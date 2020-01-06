@@ -5,6 +5,7 @@ import com.example.carros.domain.CarroService;
 import com.example.carros.domain.dto.CarroDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class CarrosController {
     }
 
     @PostMapping()
+    @Secured({"ROLE_ADMIN"})
     public String post(@RequestBody Carro carro){
         service.save(carro);
         return "Carro Salvo com sucesso";
